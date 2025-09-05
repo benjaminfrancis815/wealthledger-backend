@@ -25,4 +25,6 @@ spring:
 
 logging:
   level:
-    root: INFO		
+    root: INFO	
+cors:
+  allowed-origin: ${FRONTEND_URL}
