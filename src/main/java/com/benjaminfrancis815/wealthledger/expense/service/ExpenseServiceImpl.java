@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.benjaminfrancis815.wealthledger.expense.dto.CreateExpenseRequest;
@@ -59,7 +60,8 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 	@Override
 	public GetAllExpensesResponse getAllExpenses() {
-		final List<Expense> expenses = expenseRepository.findAll();
+		final List<Expense> expenses = expenseRepository
+				.findAll(Sort.by(Sort.Order.asc("expenseDate"), Sort.Order.asc("id")));
 		final List<GetAllExpensesResponse.Expense> fetchedExpenses = expenses.stream()
 				.map(this::toGetAllExpensesResponseExpense).collect(Collectors.toCollection(ArrayList::new));
 		return new GetAllExpensesResponse(fetchedExpenses);
