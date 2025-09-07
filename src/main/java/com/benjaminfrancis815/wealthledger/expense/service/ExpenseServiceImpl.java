@@ -27,10 +27,10 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 	@Override
 	public void deleteExpense(final Long id) {
-		if (!expenseRepository.existsById(id)) {
+		if (!this.expenseRepository.existsById(id)) {
 			throw new RuntimeException("Expense not found...!");
 		}
-		expenseRepository.deleteById(id);
+		this.expenseRepository.deleteById(id);
 	}
 
 	@Override
@@ -39,45 +39,51 @@ public class ExpenseServiceImpl implements ExpenseService {
 		expense.setExpenseDate(request.expenseDate());
 		expense.setDescription(request.description());
 		expense.setAmount(request.amount());
-		final Expense savedExpense = expenseRepository.save(expense);
+		expense.setExpenseCategoryId(request.expenseCategoryId());
+		expense.setPaymentModeId(request.paymentModeId());
+		final Expense savedExpense = this.expenseRepository.save(expense);
 		final CreateExpenseResponse response = new CreateExpenseResponse(savedExpense.getId(),
-				savedExpense.getExpenseDate(), savedExpense.getAmount(), savedExpense.getDescription());
+				savedExpense.getExpenseDate(), savedExpense.getAmount(), savedExpense.getDescription(),
+				savedExpense.getExpenseCategoryId(), savedExpense.getPaymentModeId());
 		return response;
 	}
 
 	@Override
 	public UpdateExpenseResponse updateExpense(final Long id, final UpdateExpenseRequest request) {
-		final Expense expense = expenseRepository.findById(id)
+		final Expense expense = this.expenseRepository.findById(id)
 				.orElseThrow(() -> new RuntimeException("Expense not found...!"));
 		expense.setExpenseDate(request.expenseDate());
 		expense.setDescription(request.description());
 		expense.setAmount(request.amount());
-		final Expense updatedExpense = expenseRepository.save(expense);
+		expense.setExpenseCategoryId(request.expenseCategoryId());
+		expense.setPaymentModeId(request.paymentModeId());
+		final Expense updatedExpense = this.expenseRepository.save(expense);
 		final UpdateExpenseResponse response = new UpdateExpenseResponse(updatedExpense.getId(),
-				updatedExpense.getExpenseDate(), updatedExpense.getAmount(), updatedExpense.getDescription());
+				updatedExpense.getExpenseDate(), updatedExpense.getAmount(), updatedExpense.getDescription(),
+				updatedExpense.getExpenseCategoryId(), updatedExpense.getPaymentModeId());
 		return response;
 	}
 
 	@Override
 	public GetAllExpensesResponse getAllExpenses() {
-		final List<Expense> expenses = expenseRepository
+		final List<Expense> expenses = this.expenseRepository
 				.findAll(Sort.by(Sort.Order.asc("expenseDate"), Sort.Order.asc("id")));
-		final List<GetAllExpensesResponse.Expense> fetchedExpenses = expenses.stream()
+		final List<GetAllExpensesResponse.Expense> transformedExpenses = expenses.stream()
 				.map(this::toGetAllExpensesResponseExpense).collect(Collectors.toCollection(ArrayList::new));
-		return new GetAllExpensesResponse(fetchedExpenses);
+		return new GetAllExpensesResponse(transformedExpenses);
 	}
 
 	@Override
 	public GetExpenseResponse getExpense(final Long id) {
-		final Expense expense = expenseRepository.findById(id)
+		final Expense expense = this.expenseRepository.findById(id)
 				.orElseThrow(() -> new RuntimeException("Expense not found...!"));
 		return new GetExpenseResponse(expense.getId(), expense.getExpenseDate(), expense.getAmount(),
-				expense.getDescription());
+				expense.getDescription(), expense.getExpenseCategoryId(), expense.getPaymentModeId());
 	}
 
 	private GetAllExpensesResponse.Expense toGetAllExpensesResponseExpense(final Expense expense) {
 		return new GetAllExpensesResponse.Expense(expense.getId(), expense.getExpenseDate(), expense.getAmount(),
-				expense.getDescription());
+				expense.getDescription(), expense.getExpenseCategoryId(), expense.getPaymentModeId());
 	}
 
 }

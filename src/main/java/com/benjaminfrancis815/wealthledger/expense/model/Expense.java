@@ -27,8 +27,14 @@ public class Expense {
 	@Column(name = "description")
 	private String description;
 
+	@Column(name = "expense_category_id")
+	private Long expenseCategoryId;
+
+	@Column(name = "payment_mode_id")
+	private Long paymentModeId;
+
 	public Long getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(final Long id) {
@@ -36,7 +42,7 @@ public class Expense {
 	}
 
 	public LocalDate getExpenseDate() {
-		return expenseDate;
+		return this.expenseDate;
 	}
 
 	public void setExpenseDate(final LocalDate expenseDate) {
@@ -44,7 +50,7 @@ public class Expense {
 	}
 
 	public BigDecimal getAmount() {
-		return amount;
+		return this.amount;
 	}
 
 	public void setAmount(final BigDecimal amount) {
@@ -52,11 +58,27 @@ public class Expense {
 	}
 
 	public String getDescription() {
-		return description;
+		return this.description;
 	}
 
 	public void setDescription(final String description) {
 		this.description = description;
+	}
+
+	public Long getExpenseCategoryId() {
+		return this.expenseCategoryId;
+	}
+
+	public void setExpenseCategoryId(final Long expenseCategoryId) {
+		this.expenseCategoryId = expenseCategoryId;
+	}
+
+	public Long getPaymentModeId() {
+		return this.paymentModeId;
+	}
+
+	public void setPaymentModeId(final Long paymentModeId) {
+		this.paymentModeId = paymentModeId;
 	}
 
 }
