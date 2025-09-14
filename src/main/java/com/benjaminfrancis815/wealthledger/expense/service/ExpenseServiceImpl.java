@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.benjaminfrancis815.wealthledger.expense.dto.CreateExpenseRequest;
@@ -15,6 +17,7 @@ import com.benjaminfrancis815.wealthledger.expense.dto.UpdateExpenseRequest;
 import com.benjaminfrancis815.wealthledger.expense.dto.UpdateExpenseResponse;
 import com.benjaminfrancis815.wealthledger.expense.model.Expense;
 import com.benjaminfrancis815.wealthledger.expense.repository.ExpenseRepository;
+import com.benjaminfrancis815.wealthledger.security.model.User;
 
 @Service
 public class ExpenseServiceImpl implements ExpenseService {
@@ -27,7 +30,10 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 	@Override
 	public void deleteExpense(final Long id) {
-		if (!this.expenseRepository.existsById(id)) {
+		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		final User user = (User) authentication.getPrincipal();
+		final Long userId = user.getId();
+		if (!this.expenseRepository.existsByIdAndCreatedBy(id, userId)) {
 			throw new RuntimeException("Expense not found...!");
 		}
 		this.expenseRepository.deleteById(id);
@@ -50,7 +56,10 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 	@Override
 	public UpdateExpenseResponse updateExpense(final Long id, final UpdateExpenseRequest request) {
-		final Expense expense = this.expenseRepository.findById(id)
+		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		final User user = (User) authentication.getPrincipal();
+		final Long userId = user.getId();
+		final Expense expense = this.expenseRepository.findByIdAndCreatedBy(id, userId)
 				.orElseThrow(() -> new RuntimeException("Expense not found...!"));
 		expense.setExpenseDate(request.expenseDate());
 		expense.setDescription(request.description());
@@ -66,8 +75,11 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 	@Override
 	public GetAllExpensesResponse getAllExpenses() {
+		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		final User user = (User) authentication.getPrincipal();
+		final Long userId = user.getId();
 		final List<Expense> expenses = this.expenseRepository
-				.findAll(Sort.by(Sort.Order.asc("expenseDate"), Sort.Order.asc("id")));
+				.findAllByCreatedBy(Sort.by(Sort.Order.asc("expenseDate"), Sort.Order.asc("id")), userId);
 		final List<GetAllExpensesResponse.Expense> transformedExpenses = expenses.stream()
 				.map(this::toGetAllExpensesResponseExpense).collect(Collectors.toCollection(ArrayList::new));
 		return new GetAllExpensesResponse(transformedExpenses);
@@ -75,7 +87,10 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 	@Override
 	public GetExpenseResponse getExpense(final Long id) {
-		final Expense expense = this.expenseRepository.findById(id)
+		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		final User user = (User) authentication.getPrincipal();
+		final Long userId = user.getId();
+		final Expense expense = this.expenseRepository.findByIdAndCreatedBy(id, userId)
 				.orElseThrow(() -> new RuntimeException("Expense not found...!"));
 		return new GetExpenseResponse(expense.getId(), expense.getExpenseDate(), expense.getAmount(),
 				expense.getDescription(), expense.getExpenseCategoryId(), expense.getPaymentModeId());
