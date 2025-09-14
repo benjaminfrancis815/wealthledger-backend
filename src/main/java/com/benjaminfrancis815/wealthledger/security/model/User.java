@@ -8,20 +8,21 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.benjaminfrancis815.wealthledger.model.AuditableEntity;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
-public class User implements UserDetails {
+public class User extends AuditableEntity implements UserDetails {
 
 	private static final long serialVersionUID = 1L;
 
@@ -35,12 +36,11 @@ public class User implements UserDetails {
 	@Column(name = "password")
 	private String password;
 
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-	private final Set<Role> roles;
+	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private final Set<UserRole> userRoles;
 
 	public User() {
-		this.roles = new HashSet<>();
+		this.userRoles = new HashSet<>();
 	}
 
 	public Long getId() {
@@ -71,11 +71,19 @@ public class User implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return this.roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).toList();
+		return this.userRoles.stream()
+				.map(userRole -> new SimpleGrantedAuthority("ROLE_" + userRole.getRole().getName())).toList();
 	}
 
 	public void addRole(final Role role) {
-		this.roles.add(role);
+		final UserRole userRole = new UserRole();
+		final UserRoleId userRoleId = new UserRoleId();
+		userRoleId.setUserId(this.getId());
+		userRoleId.setRoleId(role.getId());
+		userRole.setId(userRoleId);
+		userRole.setUser(this);
+		userRole.setRole(role);
+		this.userRoles.add(userRole);
 	}
 
 }

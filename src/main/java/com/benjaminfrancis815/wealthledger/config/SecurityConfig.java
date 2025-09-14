@@ -41,8 +41,8 @@ public class SecurityConfig {
 				// Disable BasicAuthenticationFilter
 				.httpBasic(httpBasic -> httpBasic.disable())
 				// Authorize HTTP requests
-				.authorizeHttpRequests(auth -> auth.requestMatchers("/v1/auth/register", "/v1/auth/login").permitAll()
-						.anyRequest().authenticated())
+				.authorizeHttpRequests(auth -> auth.requestMatchers("/v1/auth/login").permitAll()
+						.requestMatchers("/v1/auth/register").hasRole("ADMIN").anyRequest().hasAnyRole("ADMIN", "USER"))
 				// Call JwtAuthenticationFilter before any of the spring security filters
 				.addFilterBefore(this.jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();

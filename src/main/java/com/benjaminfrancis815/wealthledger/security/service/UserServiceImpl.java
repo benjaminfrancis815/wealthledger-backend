@@ -11,6 +11,8 @@ import com.benjaminfrancis815.wealthledger.security.model.User;
 import com.benjaminfrancis815.wealthledger.security.repository.RoleRepository;
 import com.benjaminfrancis815.wealthledger.security.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -27,6 +29,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional
 	public RegisterUserResponse registerUser(final RegisterUserRequest request) {
 		if (this.userRepository.existsByUsername(request.username())) {
 			throw new RuntimeException("User already exists...!");
@@ -34,7 +37,7 @@ public class UserServiceImpl implements UserService {
 		final User user = new User();
 		user.setUsername(request.username());
 		user.setPassword(this.passwordEncoder.encode(request.password()));
-		final Role role = this.roleRepository.findByName("ADMIN")
+		final Role role = this.roleRepository.findByName("USER")
 				.orElseThrow(() -> new RuntimeException("Role not found...!"));
 		user.addRole(role);
 		final User savedUser = this.userRepository.save(user);
