@@ -1,5 +1,7 @@
 package com.benjaminfrancis815.wealthledger.expense.controller;
 
+import java.time.LocalDate;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.benjaminfrancis815.wealthledger.expense.dto.CreateExpenseRequest;
@@ -29,8 +32,10 @@ public class ExpenseController {
 	}
 
 	@GetMapping(value = "/v1/expenses", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<GetAllExpensesResponse> getAllExpenses() {
-		final GetAllExpensesResponse response = this.expenseService.getAllExpenses();
+	public ResponseEntity<GetAllExpensesResponse> getAllExpenses(
+			@RequestParam(required = false) final LocalDate expenseStartDate,
+			@RequestParam(required = false) final LocalDate expenseEndDate) {
+		final GetAllExpensesResponse response = this.expenseService.getAllExpenses(expenseStartDate, expenseEndDate);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 

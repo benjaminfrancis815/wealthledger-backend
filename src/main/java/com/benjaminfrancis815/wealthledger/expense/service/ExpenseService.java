@@ -1,5 +1,7 @@
 package com.benjaminfrancis815.wealthledger.expense.service;
 
+import java.time.LocalDate;
+
 import com.benjaminfrancis815.wealthledger.expense.dto.CreateExpenseRequest;
 import com.benjaminfrancis815.wealthledger.expense.dto.CreateExpenseResponse;
 import com.benjaminfrancis815.wealthledger.expense.dto.GetAllExpensesResponse;
@@ -9,7 +11,7 @@ import com.benjaminfrancis815.wealthledger.expense.dto.UpdateExpenseResponse;
 
 public interface ExpenseService {
 
-	GetAllExpensesResponse getAllExpenses();
+	GetAllExpensesResponse getAllExpenses(final LocalDate expenseStartDate, final LocalDate expenseEndDate);
 
 	GetExpenseResponse getExpense(final Long id);
 

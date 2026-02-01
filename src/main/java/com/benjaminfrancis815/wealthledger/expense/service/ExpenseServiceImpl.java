@@ -1,10 +1,12 @@
 package com.benjaminfrancis815.wealthledger.expense.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import com.benjaminfrancis815.wealthledger.expense.dto.UpdateExpenseRequest;
 import com.benjaminfrancis815.wealthledger.expense.dto.UpdateExpenseResponse;
 import com.benjaminfrancis815.wealthledger.expense.model.Expense;
 import com.benjaminfrancis815.wealthledger.expense.repository.ExpenseRepository;
+import com.benjaminfrancis815.wealthledger.expense.specification.ExpenseSpecifications;
 import com.benjaminfrancis815.wealthledger.security.model.User;
 
 @Service
@@ -74,12 +77,14 @@ public class ExpenseServiceImpl implements ExpenseService {
 	}
 
 	@Override
-	public GetAllExpensesResponse getAllExpenses() {
+	public GetAllExpensesResponse getAllExpenses(final LocalDate expenseStartDate, final LocalDate expenseEndDate) {
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		final User user = (User) authentication.getPrincipal();
 		final Long userId = user.getId();
-		final List<Expense> expenses = this.expenseRepository
-				.findAllByCreatedBy(Sort.by(Sort.Order.asc("expenseDate"), Sort.Order.asc("id")), userId);
+		final Sort sort = Sort.by(Sort.Order.asc("expenseDate"), Sort.Order.asc("id"));
+		final Specification<Expense> specification = ExpenseSpecifications.getAllExpenses(userId, expenseStartDate,
+				expenseEndDate);
+		final List<Expense> expenses = this.expenseRepository.findAll(specification, sort);
 		final List<GetAllExpensesResponse.Expense> transformedExpenses = expenses.stream()
 				.map(this::toGetAllExpensesResponseExpense).collect(Collectors.toCollection(ArrayList::new));
 		return new GetAllExpensesResponse(transformedExpenses);

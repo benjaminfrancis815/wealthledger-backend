@@ -5,10 +5,11 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.benjaminfrancis815.wealthledger.expense.model.Expense;
 
-public interface ExpenseRepository extends JpaRepository<Expense, Long> {
+public interface ExpenseRepository extends JpaRepository<Expense, Long>, JpaSpecificationExecutor<Expense> {
 
 	boolean existsByIdAndCreatedBy(Long id, Long userId);
 
