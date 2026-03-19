@@ -50,10 +50,11 @@ public class ExpenseServiceImpl implements ExpenseService {
 		expense.setAmount(request.amount());
 		expense.setExpenseCategoryId(request.expenseCategoryId());
 		expense.setPaymentModeId(request.paymentModeId());
+		expense.setExpenseBookId(request.expenseBookId());
 		final Expense savedExpense = this.expenseRepository.save(expense);
 		final CreateExpenseResponse response = new CreateExpenseResponse(savedExpense.getId(),
 				savedExpense.getExpenseDate(), savedExpense.getAmount(), savedExpense.getDescription(),
-				savedExpense.getExpenseCategoryId(), savedExpense.getPaymentModeId());
+				savedExpense.getExpenseCategoryId(), savedExpense.getPaymentModeId(), savedExpense.getExpenseBookId());
 		return response;
 	}
 
@@ -69,21 +70,24 @@ public class ExpenseServiceImpl implements ExpenseService {
 		expense.setAmount(request.amount());
 		expense.setExpenseCategoryId(request.expenseCategoryId());
 		expense.setPaymentModeId(request.paymentModeId());
+		expense.setExpenseBookId(request.expenseBookId());
 		final Expense updatedExpense = this.expenseRepository.save(expense);
 		final UpdateExpenseResponse response = new UpdateExpenseResponse(updatedExpense.getId(),
 				updatedExpense.getExpenseDate(), updatedExpense.getAmount(), updatedExpense.getDescription(),
-				updatedExpense.getExpenseCategoryId(), updatedExpense.getPaymentModeId());
+				updatedExpense.getExpenseCategoryId(), updatedExpense.getPaymentModeId(),
+				updatedExpense.getExpenseBookId());
 		return response;
 	}
 
 	@Override
-	public GetAllExpensesResponse getAllExpenses(final LocalDate expenseStartDate, final LocalDate expenseEndDate) {
+	public GetAllExpensesResponse getAllExpenses(final LocalDate expenseStartDate, final LocalDate expenseEndDate,
+			final Long expenseBookId) {
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		final User user = (User) authentication.getPrincipal();
 		final Long userId = user.getId();
 		final Sort sort = Sort.by(Sort.Order.asc("expenseDate"), Sort.Order.asc("id"));
 		final Specification<Expense> specification = ExpenseSpecifications.getAllExpenses(userId, expenseStartDate,
-				expenseEndDate);
+				expenseEndDate, expenseBookId);
 		final List<Expense> expenses = this.expenseRepository.findAll(specification, sort);
 		final List<GetAllExpensesResponse.Expense> transformedExpenses = expenses.stream()
 				.map(this::toGetAllExpensesResponseExpense).collect(Collectors.toCollection(ArrayList::new));
@@ -98,12 +102,14 @@ public class ExpenseServiceImpl implements ExpenseService {
 		final Expense expense = this.expenseRepository.findByIdAndCreatedBy(id, userId)
 				.orElseThrow(() -> new RuntimeException("Expense not found...!"));
 		return new GetExpenseResponse(expense.getId(), expense.getExpenseDate(), expense.getAmount(),
-				expense.getDescription(), expense.getExpenseCategoryId(), expense.getPaymentModeId());
+				expense.getDescription(), expense.getExpenseCategoryId(), expense.getPaymentModeId(),
+				expense.getExpenseBookId());
 	}
 
 	private GetAllExpensesResponse.Expense toGetAllExpensesResponseExpense(final Expense expense) {
 		return new GetAllExpensesResponse.Expense(expense.getId(), expense.getExpenseDate(), expense.getAmount(),
-				expense.getDescription(), expense.getExpenseCategoryId(), expense.getPaymentModeId());
+				expense.getDescription(), expense.getExpenseCategoryId(), expense.getPaymentModeId(),
+				expense.getExpenseBookId());
 	}
 
 }

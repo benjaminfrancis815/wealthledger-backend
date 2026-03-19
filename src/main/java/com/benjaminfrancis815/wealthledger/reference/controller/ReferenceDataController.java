@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.benjaminfrancis815.wealthledger.reference.dto.GetExpenseBooksResponse;
 import com.benjaminfrancis815.wealthledger.reference.dto.GetExpenseCategoriesResponse;
 import com.benjaminfrancis815.wealthledger.reference.dto.GetPaymentModesResponse;
 import com.benjaminfrancis815.wealthledger.reference.service.ReferenceDataService;
@@ -30,6 +31,12 @@ public class ReferenceDataController {
 		final GetExpenseCategoriesResponse getExpenseCategoriesResponse = this.referenceDataService
 				.getExpenseCategories();
 		return new ResponseEntity<>(getExpenseCategoriesResponse, HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/v1/expense-books", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<GetExpenseBooksResponse> getExpenseBooks() {
+		final GetExpenseBooksResponse getExpenseBooksResponse = this.referenceDataService.getExpenseBooks();
+		return new ResponseEntity<>(getExpenseBooksResponse, HttpStatus.OK);
 	}
 
 }

@@ -11,7 +11,8 @@ import com.benjaminfrancis815.wealthledger.expense.dto.UpdateExpenseResponse;
 
 public interface ExpenseService {
 
-	GetAllExpensesResponse getAllExpenses(final LocalDate expenseStartDate, final LocalDate expenseEndDate);
+	GetAllExpensesResponse getAllExpenses(final LocalDate expenseStartDate, final LocalDate expenseEndDate,
+			final Long expenseBookId);
 
 	GetExpenseResponse getExpense(final Long id);
 

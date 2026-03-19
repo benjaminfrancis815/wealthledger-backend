@@ -17,7 +17,7 @@ public class ExpenseSpecifications {
 	}
 
 	public static Specification<Expense> getAllExpenses(final Long userId, final LocalDate expenseStartDate,
-			final LocalDate expenseEndDate) {
+			final LocalDate expenseEndDate, final Long expenseBookId) {
 		return (root, query, criteriaBuilder) -> {
 			final List<Predicate> predicates = new ArrayList<>();
 
@@ -29,6 +29,10 @@ public class ExpenseSpecifications {
 
 			if (expenseEndDate != null) {
 				predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("expenseDate"), expenseEndDate));
+			}
+
+			if (expenseBookId != null) {
+				predicates.add(criteriaBuilder.equal(root.get("expenseBookId"), expenseBookId));
 			}
 
 			return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

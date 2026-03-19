@@ -35,6 +35,9 @@ public class Expense extends AuditableEntity {
 	@Column(name = "payment_mode_id")
 	private Long paymentModeId;
 
+	@Column(name = "expense_book_id")
+	private Long expenseBookId;
+
 	public Long getId() {
 		return this.id;
 	}
@@ -81,6 +84,14 @@ public class Expense extends AuditableEntity {
 
 	public void setPaymentModeId(final Long paymentModeId) {
 		this.paymentModeId = paymentModeId;
+	}
+
+	public Long getExpenseBookId() {
+		return this.expenseBookId;
+	}
+
+	public void setExpenseBookId(final Long expenseBookId) {
+		this.expenseBookId = expenseBookId;
 	}
 
 }

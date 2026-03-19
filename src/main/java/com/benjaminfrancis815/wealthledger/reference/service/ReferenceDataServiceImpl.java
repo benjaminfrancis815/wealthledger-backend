@@ -6,10 +6,13 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.benjaminfrancis815.wealthledger.reference.dto.GetExpenseBooksResponse;
 import com.benjaminfrancis815.wealthledger.reference.dto.GetExpenseCategoriesResponse;
 import com.benjaminfrancis815.wealthledger.reference.dto.GetPaymentModesResponse;
+import com.benjaminfrancis815.wealthledger.reference.model.ExpenseBook;
 import com.benjaminfrancis815.wealthledger.reference.model.ExpenseCategory;
 import com.benjaminfrancis815.wealthledger.reference.model.PaymentMode;
+import com.benjaminfrancis815.wealthledger.reference.repository.ExpenseBookRepository;
 import com.benjaminfrancis815.wealthledger.reference.repository.ExpenseCategoryRepository;
 import com.benjaminfrancis815.wealthledger.reference.repository.PaymentModeRepository;
 
@@ -18,11 +21,14 @@ public class ReferenceDataServiceImpl implements ReferenceDataService {
 
 	private final PaymentModeRepository paymentModeRepository;
 	private final ExpenseCategoryRepository expenseCategoryRepository;
+	private final ExpenseBookRepository expenseBookRepository;
 
 	public ReferenceDataServiceImpl(final PaymentModeRepository paymentModeRepository,
-			final ExpenseCategoryRepository expenseCategoryRepository) {
+			final ExpenseCategoryRepository expenseCategoryRepository,
+			final ExpenseBookRepository expenseBookRepository) {
 		this.paymentModeRepository = paymentModeRepository;
 		this.expenseCategoryRepository = expenseCategoryRepository;
+		this.expenseBookRepository = expenseBookRepository;
 	}
 
 	@Override
@@ -42,6 +48,14 @@ public class ReferenceDataServiceImpl implements ReferenceDataService {
 		return new GetExpenseCategoriesResponse(transformedExpenseCategories);
 	}
 
+	@Override
+	public GetExpenseBooksResponse getExpenseBooks() {
+		final List<ExpenseBook> expenseBooks = this.expenseBookRepository.findAll();
+		final List<GetExpenseBooksResponse.ExpenseBook> transformedExpenseBooks = expenseBooks.stream()
+				.map(this::toGetExpenseBooksResponseExpenseBook).collect(Collectors.toCollection(ArrayList::new));
+		return new GetExpenseBooksResponse(transformedExpenseBooks);
+	}
+
 	private GetPaymentModesResponse.PaymentMode toGetPaymentModesResponsePaymentMode(final PaymentMode paymentMode) {
 		return new GetPaymentModesResponse.PaymentMode(paymentMode.getId(), paymentMode.getName());
 	}
@@ -49,6 +63,10 @@ public class ReferenceDataServiceImpl implements ReferenceDataService {
 	private GetExpenseCategoriesResponse.ExpenseCategory toGetExpenseCategoriesResponseExpenseCategory(
 			final ExpenseCategory expenseCategory) {
 		return new GetExpenseCategoriesResponse.ExpenseCategory(expenseCategory.getId(), expenseCategory.getName());
+	}
+
+	private GetExpenseBooksResponse.ExpenseBook toGetExpenseBooksResponseExpenseBook(final ExpenseBook expenseBook) {
+		return new GetExpenseBooksResponse.ExpenseBook(expenseBook.getId(), expenseBook.getName());
 	}
 
 }

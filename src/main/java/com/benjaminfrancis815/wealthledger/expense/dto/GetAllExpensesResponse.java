@@ -7,7 +7,7 @@ import java.util.List;
 public record GetAllExpensesResponse(List<Expense> expenses) {
 
 	public static record Expense(Long id, LocalDate expenseDate, BigDecimal amount, String description,
-			Long expenseCategoryId, Long paymentModeId) {
+			Long expenseCategoryId, Long paymentModeId, Long expenseBookId) {
 
 	}
 

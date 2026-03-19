@@ -34,8 +34,10 @@ public class ExpenseController {
 	@GetMapping(value = "/v1/expenses", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<GetAllExpensesResponse> getAllExpenses(
 			@RequestParam(required = false) final LocalDate expenseStartDate,
-			@RequestParam(required = false) final LocalDate expenseEndDate) {
-		final GetAllExpensesResponse response = this.expenseService.getAllExpenses(expenseStartDate, expenseEndDate);
+			@RequestParam(required = false) final LocalDate expenseEndDate,
+			@RequestParam(required = false) final Long expenseBookId) {
+		final GetAllExpensesResponse response = this.expenseService.getAllExpenses(expenseStartDate, expenseEndDate,
+				expenseBookId);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
