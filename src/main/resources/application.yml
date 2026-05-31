@@ -30,4 +30,9 @@ cors:
   allowed-origin: ${FRONTEND_URL}
 jwt:
   secret: ${JWT_SECRET}
-  expirationMs : ${JWT_EXPIRATION_MS}
+  expirationMs : 86400000
+mf:
+  save-nav-schedule-cron: "0 0 */6 * * *"
+  nav-file-download-url: "*****"
+  nav-file-path: "*****"
+  nav-staging-batch-size: 100
