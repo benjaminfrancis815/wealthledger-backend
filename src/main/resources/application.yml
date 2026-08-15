@@ -41,3 +41,8 @@ stock:
   ltp-file-download-url: "*****"
   ltp-file-path: "*****"
   ltp-staging-batch-size: 100
+index:
+  save-value-schedule-cron: "0 0 */6 * * *"
+  value-file-download-url: "*****"
+  value-file-path: "*****"
+  value-staging-batch-size: 100
