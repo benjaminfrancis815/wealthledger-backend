@@ -59,7 +59,7 @@ public class IndexBatchRepositoryImpl implements IndexBatchRepository {
 			    iva.high_index_value::NUMERIC(20,8),
 			    iva.low_index_value::NUMERIC(20,8),
 			    iva.closing_index_value::NUMERIC(20,8),
-			    iva.index_date::DATE,
+			    TO_DATE(iva.index_date, 'DD-MM-YYYY') index_date,
 			    iva.created_by,
 			    iva.modified_by
 			FROM
@@ -85,7 +85,7 @@ public class IndexBatchRepositoryImpl implements IndexBatchRepository {
 			            i.id = iva.index_id
 			        LEFT JOIN index_values_staging ivb ON
 			            ivb.name = i.name
-			            AND ivb.index_date::DATE = iva.index_date
+			            AND TO_DATE(ivb.index_date, 'DD-MM-YYYY') = iva.index_date
 			    WHERE
 			        (ivb.id IS NOT NULL AND iva.is_latest = FALSE)
 			        OR
