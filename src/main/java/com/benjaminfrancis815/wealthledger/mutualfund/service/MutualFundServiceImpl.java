@@ -59,6 +59,18 @@ public class MutualFundServiceImpl implements MutualFundService {
 	@Value("${mf.nav-staging-batch-size}")
 	private int navStagingBatchSize;
 
+	@Value("${mf.nav-file-valid-column-length}")
+	private int navFileValidColumnLength;
+
+	@Value("${mf.nav-file-scheme-code-column-index}")
+	private int navFileSchemeCodeColumnIndex;
+
+	@Value("${mf.nav-file-nav-column-index}")
+	private int navFileNavColumnIndex;
+
+	@Value("${mf.nav-file-nav-date-column-index}")
+	private int navFileNavDateColumnIndex;
+
 	@Autowired
 	public MutualFundServiceImpl(final WebClient webClient, final MutualFundRepository mutualFundRepository,
 			final MutualFundBatchRepository mutualFundBatchRepository,
@@ -116,16 +128,17 @@ public class MutualFundServiceImpl implements MutualFundService {
 			List<MutualFundNavStaging> mutualFundNavsStaging = null;
 			for (final CSVRecord csvRecord : csvParser) {
 				final String[] values = csvRecord.values();
-				if (values.length == 6) {
-					final Long schemeCode = Long.parseLong(values[0]);
+				if (values.length == navFileValidColumnLength) {
+					final String schemeCodeRaw = values[navFileSchemeCodeColumnIndex];
+					final Long schemeCode = Long.parseLong(schemeCodeRaw);
 					if (requiredSchemeCodes.contains(schemeCode)) {
 						if (mutualFundNavsStaging == null) {
 							mutualFundNavsStaging = new ArrayList<>();
 						}
 						final MutualFundNavStaging mutualFundNavStaging = new MutualFundNavStaging();
-						mutualFundNavStaging.setSchemeCode(values[0]);
-						mutualFundNavStaging.setNav(values[4]);
-						mutualFundNavStaging.setNavDate(values[5]);
+						mutualFundNavStaging.setSchemeCode(schemeCodeRaw);
+						mutualFundNavStaging.setNav(values[navFileNavColumnIndex]);
+						mutualFundNavStaging.setNavDate(values[navFileNavDateColumnIndex]);
 						mutualFundNavStaging.setCreatedBy(userId);
 						mutualFundNavStaging.setModifiedBy(userId);
 						mutualFundNavsStaging.add(mutualFundNavStaging);

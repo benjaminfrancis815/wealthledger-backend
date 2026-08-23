@@ -36,6 +36,10 @@ mf:
   nav-file-download-url: "*****"
   nav-file-path: "*****"
   nav-staging-batch-size: 100
+  nav-file-valid-column-length: 8
+  nav-file-scheme-code-column-index: 0
+  nav-file-nav-column-index: 6
+  nav-file-nav-date-column-index: 7
 stock:
   save-ltp-schedule-cron: "0 0 */6 * * *"
   ltp-file-download-url: "*****"
