@@ -128,8 +128,8 @@ public class MutualFundServiceImpl implements MutualFundService {
 			List<MutualFundNavStaging> mutualFundNavsStaging = null;
 			for (final CSVRecord csvRecord : csvParser) {
 				final String[] values = csvRecord.values();
-				if (values.length == navFileValidColumnLength) {
-					final String schemeCodeRaw = values[navFileSchemeCodeColumnIndex];
+				if (values.length == this.navFileValidColumnLength) {
+					final String schemeCodeRaw = values[this.navFileSchemeCodeColumnIndex];
 					final Long schemeCode = Long.parseLong(schemeCodeRaw);
 					if (requiredSchemeCodes.contains(schemeCode)) {
 						if (mutualFundNavsStaging == null) {
@@ -137,8 +137,8 @@ public class MutualFundServiceImpl implements MutualFundService {
 						}
 						final MutualFundNavStaging mutualFundNavStaging = new MutualFundNavStaging();
 						mutualFundNavStaging.setSchemeCode(schemeCodeRaw);
-						mutualFundNavStaging.setNav(values[navFileNavColumnIndex]);
-						mutualFundNavStaging.setNavDate(values[navFileNavDateColumnIndex]);
+						mutualFundNavStaging.setNav(values[this.navFileNavColumnIndex]);
+						mutualFundNavStaging.setNavDate(values[this.navFileNavDateColumnIndex]);
 						mutualFundNavStaging.setCreatedBy(userId);
 						mutualFundNavStaging.setModifiedBy(userId);
 						mutualFundNavsStaging.add(mutualFundNavStaging);

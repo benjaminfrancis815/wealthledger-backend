@@ -1,17 +1,18 @@
 package com.benjaminfrancis815.wealthledger.stock.service;
 
 import java.io.IOException;
-import java.nio.file.Path;
+import java.util.List;
 
 import com.benjaminfrancis815.wealthledger.stock.dto.GetAllLtpsResponse;
+import com.benjaminfrancis815.wealthledger.stock.type.LtpFile;
 
 public interface StockService {
 
 	GetAllLtpsResponse getAllLtps();
 
-	Path saveLtpFile();
+	List<LtpFile> saveLtpFiles();
 
-	int stageLtpFile(final Path path) throws IOException;
+	int stageLtpFiles(final List<LtpFile> ltpFiles) throws IOException;
 
 	void saveStockLtps(final int stagedRecords);
 

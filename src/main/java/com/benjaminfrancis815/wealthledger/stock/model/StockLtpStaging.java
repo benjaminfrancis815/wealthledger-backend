@@ -8,6 +8,8 @@ public class StockLtpStaging {
 
 	private String ltpDate;
 
+	private Long stockExchangeId;
+
 	private Long createdBy;
 
 	private Long modifiedBy;
@@ -34,6 +36,14 @@ public class StockLtpStaging {
 
 	public void setLtpDate(final String ltpDate) {
 		this.ltpDate = ltpDate;
+	}
+
+	public Long getStockExchangeId() {
+		return this.stockExchangeId;
+	}
+
+	public void setStockExchangeId(final Long stockExchangeId) {
+		this.stockExchangeId = stockExchangeId;
 	}
 
 	public Long getCreatedBy() {

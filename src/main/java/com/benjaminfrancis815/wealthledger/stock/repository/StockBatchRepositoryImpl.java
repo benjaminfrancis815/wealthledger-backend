@@ -28,6 +28,7 @@ public class StockBatchRepositoryImpl implements StockBatchRepository {
 			    symbol,
 			    ltp,
 			    ltp_date,
+			    stock_exchange_id,
 			    created_by,
 			    modified_by
 			)
@@ -35,6 +36,7 @@ public class StockBatchRepositoryImpl implements StockBatchRepository {
 			    :symbol,
 			    :ltp,
 			    :ltpDate,
+			    :stockExchangeId,
 			    :createdBy,
 			    :modifiedBy
 			)
@@ -45,6 +47,7 @@ public class StockBatchRepositoryImpl implements StockBatchRepository {
 			    stock_id,
 			    ltp,
 			    ltp_date,
+			    stock_exchange_id,
 			    created_by,
 			    modified_by
 			)
@@ -52,13 +55,14 @@ public class StockBatchRepositoryImpl implements StockBatchRepository {
 			    s.id,
 			    sla.ltp::NUMERIC(20,8),
 			    sla.ltp_date::DATE,
+			    stock_exchange_id::BIGINT,
 			    sla.created_by,
 			    sla.modified_by
 			FROM
 			    stock_ltps_staging sla
 			    INNER JOIN stocks s ON
 			        s.symbol = sla.symbol
-			ON CONFLICT (stock_id, ltp_date) DO NOTHING
+			ON CONFLICT (stock_id, ltp_date, stock_exchange_id) DO NOTHING
 						""";
 
 	private static final String STOCK_LTPS_UPDATE_SQL = """
@@ -78,6 +82,7 @@ public class StockBatchRepositoryImpl implements StockBatchRepository {
 			        LEFT JOIN stock_ltps_staging slb ON
 			            slb.symbol = s.symbol
 			            AND slb.ltp_date::DATE = sla.ltp_date
+			            AND slb.stock_exchange_id::BIGINT = sla.stock_exchange_id
 			    WHERE
 			        (slb.id IS NOT NULL AND sla.is_latest = FALSE)
 			        OR
@@ -113,6 +118,7 @@ public class StockBatchRepositoryImpl implements StockBatchRepository {
 		final SqlParameterSource[] sqlParameterSources = stockLtpsStaging.stream().map(x -> {
 			return new MapSqlParameterSource().addValue("symbol", x.getSymbol(), Types.VARCHAR)
 					.addValue("ltp", x.getLtp(), Types.VARCHAR).addValue("ltpDate", x.getLtpDate(), Types.VARCHAR)
+					.addValue("stockExchangeId", x.getStockExchangeId(), Types.BIGINT)
 					.addValue("createdBy", x.getCreatedBy(), Types.BIGINT)
 					.addValue("modifiedBy", x.getModifiedBy(), Types.BIGINT);
 		}).toArray(SqlParameterSource[]::new);

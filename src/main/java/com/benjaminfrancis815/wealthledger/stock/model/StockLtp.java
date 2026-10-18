@@ -33,6 +33,10 @@ public class StockLtp extends AuditableEntity {
 	@JoinColumn(name = "stock_id")
 	private Stock stock;
 
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "stock_exchange_id")
+	private StockExchange stockExchange;
+
 	public Long getId() {
 		return this.id;
 	}
@@ -71,6 +75,14 @@ public class StockLtp extends AuditableEntity {
 
 	public void setStock(final Stock stock) {
 		this.stock = stock;
+	}
+
+	public StockExchange getStockExchange() {
+		return this.stockExchange;
+	}
+
+	public void setStockExchange(final StockExchange stockExchange) {
+		this.stockExchange = stockExchange;
 	}
 
 }

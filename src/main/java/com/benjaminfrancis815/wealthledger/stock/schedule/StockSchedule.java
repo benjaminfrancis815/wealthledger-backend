@@ -1,6 +1,6 @@
 package com.benjaminfrancis815.wealthledger.stock.schedule;
 
-import java.nio.file.Path;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.benjaminfrancis815.wealthledger.stock.service.StockService;
+import com.benjaminfrancis815.wealthledger.stock.type.LtpFile;
 
 @Component
 public class StockSchedule {
@@ -23,10 +24,10 @@ public class StockSchedule {
 	}
 
 	@Scheduled(cron = "${stock.save-ltp-schedule-cron}")
-	public void saveNav() {
+	public void saveLtp() {
 		try {
-			final Path path = this.stockService.saveLtpFile();
-			final int stagedRecords = this.stockService.stageLtpFile(path);
+			final List<LtpFile> ltpFiles = this.stockService.saveLtpFiles();
+			final int stagedRecords = this.stockService.stageLtpFiles(ltpFiles);
 			this.stockService.saveStockLtps(stagedRecords);
 		} catch (final Exception exc) {
 			log.error("Schedule failed...!", exc);

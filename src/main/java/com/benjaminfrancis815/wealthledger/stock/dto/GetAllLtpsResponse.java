@@ -6,7 +6,8 @@ import java.util.List;
 
 public record GetAllLtpsResponse(List<Stock> stocks) {
 
-	public static record Stock(Long id, BigDecimal ltp, LocalDate ltpDate, boolean isLatest, String symbol) {
+	public static record Stock(Long id, BigDecimal ltp, LocalDate ltpDate, boolean isLatest, String symbol,
+			String stockExchangeName) {
 
 	}
 
