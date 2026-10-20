@@ -66,27 +66,43 @@ public class StockBatchRepositoryImpl implements StockBatchRepository {
 						""";
 
 	private static final String STOCK_LTPS_UPDATE_SQL = """
-			WITH updatable AS (
+			WITH computed_latest AS (
 			    SELECT
-			        sla.id,
-			        (
-			            CASE
-			                WHEN slb.id IS NOT NULL AND sla.is_latest = FALSE THEN TRUE
-			                ELSE FALSE
-			            END
-			        ) is_latest
+			        a.id
+			    FROM (
+			        SELECT
+			            sla.id,
+			            sla.is_latest,
+			            ROW_NUMBER() OVER (PARTITION BY sla.stock_id, sla.stock_exchange_id ORDER BY sla.ltp_date DESC) row_num
+			        FROM
+			            stock_ltps sla
+			    ) a
+			    WHERE
+			        a.row_num = 1
+			),
+			stale_latest AS (
+			    SELECT
+			        sla.id
 			    FROM
 			        stock_ltps sla
-			        INNER JOIN stocks s ON
-			            s.id = sla.stock_id
-			        LEFT JOIN stock_ltps_staging slb ON
-			            slb.symbol = s.symbol
-			            AND slb.ltp_date::DATE = sla.ltp_date
-			            AND slb.stock_exchange_id::BIGINT = sla.stock_exchange_id
 			    WHERE
-			        (slb.id IS NOT NULL AND sla.is_latest = FALSE)
-			        OR
-			        (slb.id IS NULL AND sla.is_latest = TRUE)
+			        sla.is_latest = TRUE
+			        AND NOT EXISTS (
+			            SELECT 1 FROM computed_latest cl WHERE cl.id = sla.id
+			        )
+			),
+			updatable AS (
+			    SELECT
+			        cl.id,
+			        TRUE is_latest
+			    FROM
+			        computed_latest cl
+			    UNION ALL
+			    SELECT
+			        sl.id,
+			        FALSE is_latest
+			    FROM
+			        stale_latest sl
 			)
 			UPDATE stock_ltps sla
 			SET
@@ -96,6 +112,7 @@ public class StockBatchRepositoryImpl implements StockBatchRepository {
 			    updatable u
 			WHERE
 			    sla.id = u.id
+			    AND sla.is_latest != u.is_latest;
 						""";
 
 	private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
